@@ -7,75 +7,83 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
             margin-top: 50px;
         }
         #question {
             font-size: 24px;
-            margin: 20px;
         }
-        input {
+        #timer {
             font-size: 20px;
-            padding: 5px;
+            color: red;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Times Table Challenge</h1>
+    <h1>Times Table Game</h1>
+    <div id="timer">Time Left: <span id="time">10</span> seconds</div>
     <div id="question"></div>
-    <input type="number" id="answer" placeholder="Your answer" />
-    <button onclick="checkAnswer()">Submit</button>
-    <div id="timer">Time left: <span id="time">30</span> seconds</div>
-    <div id="score">Score: <span id="scoreValue">0</span></div>
+    <input type="number" id="answer" placeholder="Your answer">
+    <button id="submit">Submit</button>
+    <div id="result"></div>
 
     <script>
-        let currentQuestion;
-        let score = 0;
         let timeLeft = 30;
-        let timer;
+        let score = 0;
+        let currentQuestion;
 
         function startGame() {
             score = 0;
+            nextQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('result').textContent = `Time's up! Your score: ${score}`;
+                    document.getElementById('question').textContent = '';
+                }
+            }, 1000);
+        }
+
+        function nextQuestion() {
             timeLeft = 30;
-            document.getElementById('scoreValue').innerText = score;
-            document.getElementById('time').innerText = timeLeft;
-            generateQuestion();
-            timer = setInterval(updateTimer, 1000);
+            document.getElementById('time').textContent = timeLeft;
+
+            const multiplier = Math.floor(Math.random() * 12) + 1;
+            const multiplicand = Math.floor(Math.random() * 12) + 1;
+            currentQuestion = multiplier * multiplicand;
+
+            document.getElementById('question').textContent = `What is ${multiplier} x ${multiplicand}?`;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
         }
 
-        function generateQuestion() {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            currentQuestion = num1 * num2;
-            document.getElementById('question').innerText = `What is ${num1} x ${num2}?`;
-        }
-
-        function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answer').value);
+        document.getElementById('submit').addEventListener('click', () => {
+            const userAnswer = parseInt(document.getElementById('answer').value, 12);
             if (userAnswer === currentQuestion) {
                 score++;
-                document.getElementById('scoreValue').innerText = score;
+                nextQuestion();
+            } else {
+                document.getElementById('result').textContent = `Wrong answer! Your score: ${score}`;
+                document.getElementById('question').textContent = '';
             }
-            document.getElementById('answer').value = '';
-            generateQuestion();
-        }
+        });
 
-        function updateTimer() {
-            timeLeft--;
-            document.getElementById('time').innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                title(<title>Time's up! Your score is: ${score}</title>);
-            }
-        }
+        startGame();
+    </script>
+</body>
+</html>
+
 
         window.onload = startGame;
     </script>
