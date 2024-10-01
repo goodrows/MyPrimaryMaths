@@ -68,56 +68,12 @@
             generateQuestion();
         }
 
-       <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer Title Display</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-        }
-        #timer {
-            font-size: 24px;
-        }
-        #title {
-            font-size: 32px;
-            margin-top: 20px;
-            display: none; /* Hidden initially */
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Countdown Timer</h1>
-    <div id="timer">30</div> <!-- Starting timer value -->
-    <div id="title">Time's Up you score is: ${score}`!</div>
-
-    <script>
-        let timeLeft = 30; // Set the timer duration in seconds
-
-        const timerElement = document.getElementById('timer');
-        const titleElement = document.getElementById('title');
-
-        const countdown = setInterval(() => {
-            if (timeLeft > 0) {
-                timerElement.innerText = timeLeft;
-                timeLeft--;
-            } else {
-                clearInterval(countdown);
-                timerElement.style.display = 'none'; // Hide the timer
-                titleElement.style.display = 'block'; // Show the title
-            }
-        }, 1000); // Update every second
-    </script>
-</body>
-</html>
-
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('time').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                title(`Time's up! Your score is: ${score}`);
             }
         }
 
@@ -125,3 +81,4 @@
     </script>
 </body>
 </html>
+
