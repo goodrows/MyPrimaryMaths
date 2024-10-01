@@ -68,6 +68,9 @@
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 alert(`Time's up! Your score is: ${score}`);
+
+                } else {
+                endGame();
             }
         }
         window.onload = startGame;
