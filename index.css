@@ -1,0 +1,95 @@
+.banner1-wrapper {
+  display: contents;
+}
+.banner1-container1 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+.banner1-max-width {
+  gap: var(--dl-space-space-oneandhalfunits);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.banner1-container2 {
+  gap: var(--dl-space-space-halfunit);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.banner1-link {
+  animation-name: rubberBand;
+  animation-delay: 0s;
+  text-decoration: none;
+  background-color: #0077ff;
+  animation-duration: 1s;
+  animation-direction: normal;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+}
+.home-fragment3 {
+  display: contents;
+}
+.home-text14 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+.home-fragment2 {
+  display: contents;
+}
+.home-text13 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+.home-fragment1 {
+  display: contents;
+}
+.home-text10 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+
+.home-container {
+  width: 100%;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+.home-fragment1 {
+  display: contents;
+}
+.home-text10 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+.home-fragment2 {
+  display: contents;
+}
+.home-text13 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+.home-fragment3 {
+  display: contents;
+}
+.home-text14 {
+  display: inline-block;
+  font-family: "Merriweather";
+}
+.home-text18 {
+  font-size: 24px;
+  text-align: center;
+}
+.home-link {
+  animation-name: rubberBand;
+  animation-delay: 0s;
+  text-decoration: none;
+  background-color: #0077ff;
+  animation-duration: 1s;
+  animation-direction: normal;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+}
