@@ -1,82 +1,165 @@
-<h1>MyPrimaryMaths KS2 General Test</h1>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyPrimaryMaths KS2 General Test</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-        }
-        #question {
-            font-size: 24px;
-            margin: 20px;
-        }
-        input {
-            font-size: 20px;
-            padding: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>TTRS Timed Quiz (Mobile + Desktop)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin-top: 50px;
+    }
+    #countdown, #quiz, #result, #gameTimer {
+      font-size: 2em;
+      margin: 20px;
+    }
+    #question {
+      margin: 20px;
+    }
+    input {
+      font-size: 1.5em;
+      padding: 10px;
+      width: 120px;
+      text-align: center;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      margin: 10px;
+    }
+    .keypad {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .keypad button {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5em;
+    }
+  </style>
 </head>
 <body>
-    <h1>MyPrimaryMaths KS2 General Test</h1>
-    <div id="question"></div>
-    <input type="number" id="answer" placeholder="Your answer" />
-    <button onclick="checkAnswer()">Submit</button>
-    <div id="timer">Time left: <span id="time">30</span> seconds</div>
-    <div id="score">Score: <span id="scoreValue">0</span></div>
-    <script>
-        let currentQuestion;
-        let score = 0;
-        let timeLeft = 30;
-        let timer;
-        function startGame() {
-            score = 0;
-            timeLeft = 30;
-            document.getElementById('scoreValue').innerText = score;
-            document.getElementById('time').innerText = timeLeft;
-            generateQuestion();
-            timer = setInterval(updateTimer, 1000);
-        }
-        function generateQuestion() {
-            const num1 = Math.floor(Math.random() * 12) + 1;
-            const num2 = Math.floor(Math.random() * 12) + 1;
-            currentQuestion = num1 * num2;
-            document.getElementById('question').innerText = `What is ${num1} x ${num2}?`;
-        }
-        function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answer').value);
-            if (userAnswer === currentQuestion) {
-                score++;
-                document.getElementById('scoreValue').innerText = score;
-            }
-            document.getElementById('answer').value = '';
-            generateQuestion();
-        }
-        function updateTimer() {
-            timeLeft--;
-            document.getElementById('time').innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                alert(`Time's up! Your score is: ${score}`);
 
-                } else {
-                endGame();
-            }
+  <div id="countdown">Starting in 3...</div>
+  <div id="gameTimer" style="display: none;">Time left: 30s</div>
+  
+  <div id="quiz" style="display: none;">
+    <div id="question"></div>
+    <input type="number" id="answerInput" placeholder="Answer" inputmode="numeric" />
+    <div class="keypad" id="mobileKeypad"></div>
+  </div>
+  
+  <div id="result" style="display: none;"></div>
+
+  <script>
+    let startCountdown = 3;
+    let gameTime = 30;
+    let gameTimer;
+    let correctAnswer = 0;
+    let score = 0;
+    let questionActive = false;
+    const input = document.getElementById("answerInput");
+
+    // Countdown before game starts
+    const countdownInterval = setInterval(() => {
+      startCountdown--;
+      document.getElementById('countdown').innerText = startCountdown > 0 ? 
+        `Starting in ${startCountdown}...` : "Go!";
+      if (startCountdown <= 0) {
+        clearInterval(countdownInterval);
+        setTimeout(startGame, 1000);
+      }
+    }, 1000);
+
+    // Start game function
+    function startGame() {
+      document.getElementById('countdown').style.display = 'none';
+      document.getElementById('quiz').style.display = 'block';
+      document.getElementById('gameTimer').style.display = 'block';
+      input.focus();
+      nextQuestion();
+
+      gameTimer = setInterval(() => {
+        gameTime--;
+        document.getElementById('gameTimer').innerText = `Time left: ${gameTime}s`;
+        if (gameTime <= 0) {
+          endGame();
         }
-        window.onload = startGame;
-    </script>
+      }, 1000);
+    }
+
+    // New question
+    function nextQuestion() {
+      let a = Math.floor(Math.random() * 12) + 1;
+      let b = Math.floor(Math.random() * 12) + 1;
+      correctAnswer = a * b;
+      document.getElementById('question').innerText = `What is ${a} × ${b}?`;
+      input.value = '';
+      input.focus();
+      questionActive = true;
+    }
+
+    // Check answer
+    function checkAnswer() {
+      if (!questionActive) return;
+
+      const userAnswer = parseInt(input.value);
+      if (userAnswer === correctAnswer) {
+        score++;
+      }
+      questionActive = false;
+      if (gameTime > 0) nextQuestion();
+    }
+
+    // End game
+    function endGame() {
+      clearInterval(gameTimer);
+      document.getElementById('quiz').style.display = 'none';
+      document.getElementById('gameTimer').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerText = `⏰ Time's up! You got ${score} correct.`;
+    }
+
+    // Keyboard Enter support
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        checkAnswer();
+      }
+    });
+
+    // Detect mobile
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    }
+
+    // Mobile keypad
+    if (isMobile()) {
+      const keypad = document.getElementById("mobileKeypad");
+      keypad.style.display = "flex";
+
+      const keys = ['1','2','3','4','5','6','7','8','9','0','⌫','✔'];
+      keys.forEach(key => {
+        const btn = document.createElement("button");
+        btn.innerText = key;
+        btn.onclick = () => {
+          if (key === '⌫') {
+            input.value = input.value.slice(0, -1);
+          } else if (key === '✔') {
+            checkAnswer();
+          } else {
+            input.value += key;
+          }
+        };
+        keypad.appendChild(btn);
+      });
+    }
+  </script>
+
 </body>
 </html>
+
 
