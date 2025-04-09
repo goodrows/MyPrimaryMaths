@@ -111,7 +111,7 @@
     <div class="input-area">
         <input type="number" id="answer" placeholder="Type your answer" />
     </div>
-    <button class="button" id="submitBtn">Submit</button>
+    <button class="button" id="submitBtn" style="display: none;">Submit</button>
     <button class="button reset-button" id="resetBtn" style="display: none;">Restart</button>
 </div>
 
@@ -150,15 +150,17 @@
         timerElement.textContent = timer;
     }, 1000);
 
-    // Submit answer
-    submitButton.addEventListener("click", () => {
-        if (isGameOver) return;  // Don't allow submitting after game over
+    // Submit answer (when user clicks "Enter" key)
+    inputElement.addEventListener("keydown", function(event) {
+        if (isGameOver) return; // Don't allow submitting after game over
 
-        const userAnswer = parseInt(inputElement.value);
-        if (userAnswer === currentQuestion.answer) {
-            score++;
+        if (event.key === "Enter") {
+            const userAnswer = parseInt(inputElement.value);
+            if (userAnswer === currentQuestion.answer) {
+                score++;
+            }
+            setNewQuestion();
         }
-        setNewQuestion();
     });
 
     // Restart game
@@ -177,4 +179,3 @@
 
 </body>
 </html>
-
