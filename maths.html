@@ -107,32 +107,33 @@
 <div class="container">
     <h1>Math Speed Challenge</h1>
     <div class="timer" id="timer">30</div>
-    <div class="question" id="question">5 + 3 = ?</div>
+    <div class="question" id="question">5 * 3 = ?</div>
     <div class="input-area">
         <input type="number" id="answer" placeholder="Type your answer" />
     </div>
     <button class="button" id="submitBtn" style="display: none;">Submit</button>
     <button class="button reset-button" id="resetBtn" style="display: none;">Restart</button>
+    <div class="result" id="result" style="display: none; font-size: 1.5em; color: #4CAF50;"></div>
 </div>
 
 <script>
     let timer = 30;
     let score = 0;
-    let currentQuestion = { question: "5 + 3", answer: 8 };
+    let currentQuestion = { question: "5 * 3", answer: 15 };
     let isGameOver = false;
     
     const questionElement = document.getElementById("question");
     const inputElement = document.getElementById("answer");
     const timerElement = document.getElementById("timer");
-    const submitButton = document.getElementById("submitBtn");
+    const resultElement = document.getElementById("result");
     const resetButton = document.getElementById("resetBtn");
 
-    // Set up new question
+    // Set up new multiplication question
     function setNewQuestion() {
         const num1 = Math.floor(Math.random() * 10) + 1;
         const num2 = Math.floor(Math.random() * 10) + 1;
-        currentQuestion.question = `${num1} + ${num2}`;
-        currentQuestion.answer = num1 + num2;
+        currentQuestion.question = `${num1} * ${num2}`;
+        currentQuestion.answer = num1 * num2;
         questionElement.textContent = currentQuestion.question;
         inputElement.value = "";
     }
@@ -142,7 +143,8 @@
         if (timer === 0) {
             clearInterval(timerInterval);
             isGameOver = true;
-            alert("Game Over! Your score is: " + score);
+            resultElement.textContent = `Game Over! Your score is: ${score}`;
+            resultElement.style.display = "block";
             resetButton.style.display = "block";  // Show restart button
             return;
         }
@@ -168,9 +170,10 @@
         timer = 30;
         score = 0;
         isGameOver = false;
+        resultElement.style.display = "none";  // Hide result message
+        resetButton.style.display = "none";  // Hide restart button
         setNewQuestion();
         timerElement.textContent = timer;
-        resetButton.style.display = "none";  // Hide restart button
     });
 
     // Initialize first question
