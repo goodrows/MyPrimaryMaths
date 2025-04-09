@@ -2,43 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TTRS Timed Quiz (Mobile + Desktop)</title>
+  <title>TTRS Quiz Game</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Comic Sans MS', sans-serif;
       text-align: center;
-      background-color: #f4f4f4;
-      margin-top: 50px;
+      background: linear-gradient(135deg, #FFD700, #FF69B4);
+      color: #222;
+      margin: 0;
+      padding: 30px;
     }
+
     #countdown, #quiz, #result, #gameTimer {
       font-size: 2em;
       margin: 20px;
     }
+
     #question {
       margin: 20px;
+      font-size: 2.2em;
     }
+
     input {
-      font-size: 1.5em;
+      font-size: 1.8em;
       padding: 10px;
-      width: 120px;
+      width: 160px;
       text-align: center;
+      border-radius: 10px;
+      border: 2px solid #222;
+      margin-top: 10px;
     }
+
     button {
-      font-size: 1.2em;
-      padding: 10px 20px;
+      font-size: 1.4em;
+      padding: 12px 20px;
       margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
     }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
     .keypad {
-      display: none;
+      display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
       margin-top: 20px;
     }
+
     .keypad button {
-      width: 60px;
-      height: 60px;
-      font-size: 1.5em;
+      width: 70px;
+      height: 70px;
+      font-size: 1.8em;
+      background-color: #3498db;
+    }
+
+    .keypad button:hover {
+      background-color: #2980b9;
+    }
+
+    #feedback {
+      font-size: 1.4em;
+      margin-top: 10px;
+      height: 30px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .wrong {
+      color: red;
+    }
+
+    #playAgainBtn {
+      display: none;
+      background-color: #ff6347;
+    }
+
+    #playAgainBtn:hover {
+      background-color: #e74c3c;
     }
   </style>
 </head>
@@ -46,14 +96,16 @@
 
   <div id="countdown">Starting in 3...</div>
   <div id="gameTimer" style="display: none;">Time left: 30s</div>
-  
+
   <div id="quiz" style="display: none;">
     <div id="question"></div>
     <input type="number" id="answerInput" placeholder="Answer" inputmode="numeric" />
-    <div class="keypad" id="mobileKeypad"></div>
+    <div id="feedback"></div>
+    <div class="keypad" id="universalKeypad"></div>
   </div>
-  
+
   <div id="result" style="display: none;"></div>
+  <button id="playAgainBtn" onclick="restartGame()">🔁 Play Again</button>
 
   <script>
     let startCountdown = 3;
@@ -63,8 +115,10 @@
     let score = 0;
     let questionActive = false;
     const input = document.getElementById("answerInput");
+    const keypad = document.getElementById("universalKeypad");
+    const feedback = document.getElementById("feedback");
 
-    // Countdown before game starts
+    // Countdown
     const countdownInterval = setInterval(() => {
       startCountdown--;
       document.getElementById('countdown').innerText = startCountdown > 0 ? 
@@ -75,12 +129,15 @@
       }
     }, 1000);
 
-    // Start game function
+    // Start game
     function startGame() {
       document.getElementById('countdown').style.display = 'none';
       document.getElementById('quiz').style.display = 'block';
       document.getElementById('gameTimer').style.display = 'block';
       input.focus();
+      score = 0;
+      gameTime = 30;
+      feedback.innerText = '';
       nextQuestion();
 
       gameTimer = setInterval(() => {
@@ -92,7 +149,7 @@
       }, 1000);
     }
 
-    // New question
+    // Generate question
     function nextQuestion() {
       let a = Math.floor(Math.random() * 12) + 1;
       let b = Math.floor(Math.random() * 12) + 1;
@@ -110,9 +167,18 @@
       const userAnswer = parseInt(input.value);
       if (userAnswer === correctAnswer) {
         score++;
+        feedback.innerText = '✅ Correct!';
+        feedback.className = 'correct';
+      } else {
+        feedback.innerText = `❌ Wrong! It was ${correctAnswer}`;
+        feedback.className = 'wrong';
       }
       questionActive = false;
-      if (gameTime > 0) nextQuestion();
+
+      setTimeout(() => {
+        feedback.innerText = '';
+        if (gameTime > 0) nextQuestion();
+      }, 1000);
     }
 
     // End game
@@ -121,7 +187,8 @@
       document.getElementById('quiz').style.display = 'none';
       document.getElementById('gameTimer').style.display = 'none';
       document.getElementById('result').style.display = 'block';
-      document.getElementById('result').innerText = `⏰ Time's up! You got ${score} correct.`;
+      document.getElementById('result').innerText = `🎉 Time's up! You got ${score} correct.`;
+      document.getElementById('playAgainBtn').style.display = 'inline-block';
     }
 
     // Keyboard Enter support
@@ -131,35 +198,46 @@
       }
     });
 
-    // Detect mobile
-    function isMobile() {
-      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-    }
+    // Keypad setup
+    const keys = ['1','2','3','4','5','6','7','8','9','0','⌫','✔'];
+    keys.forEach(key => {
+      const btn = document.createElement("button");
+      btn.innerText = key;
+      btn.onclick = () => {
+        if (key === '⌫') {
+          input.value = input.value.slice(0, -1);
+        } else if (key === '✔') {
+          checkAnswer();
+        } else {
+          input.value += key;
+        }
+        input.focus();
+      };
+      keypad.appendChild(btn);
+    });
 
-    // Mobile keypad
-    if (isMobile()) {
-      const keypad = document.getElementById("mobileKeypad");
-      keypad.style.display = "flex";
+    // Restart
+    function restartGame() {
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('playAgainBtn').style.display = 'none';
+      document.getElementById('quiz').style.display = 'block';
+      document.getElementById('gameTimer').style.display = 'block';
+      input.focus();
+      score = 0;
+      gameTime = 30;
+      document.getElementById('gameTimer').innerText = `Time left: 30s`;
+      feedback.innerText = '';
+      nextQuestion();
 
-      const keys = ['1','2','3','4','5','6','7','8','9','0','⌫','✔'];
-      keys.forEach(key => {
-        const btn = document.createElement("button");
-        btn.innerText = key;
-        btn.onclick = () => {
-          if (key === '⌫') {
-            input.value = input.value.slice(0, -1);
-          } else if (key === '✔') {
-            checkAnswer();
-          } else {
-            input.value += key;
-          }
-        };
-        keypad.appendChild(btn);
-      });
+      gameTimer = setInterval(() => {
+        gameTime--;
+        document.getElementById('gameTimer').innerText = `Time left: ${gameTime}s`;
+        if (gameTime <= 0) {
+          endGame();
+        }
+      }, 1000);
     }
   </script>
 
 </body>
 </html>
-
-
