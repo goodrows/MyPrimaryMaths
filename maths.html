@@ -34,14 +34,27 @@
       color: red;
     }
 
+    .answer-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     input {
       font-size: 2em;
       padding: 10px;
-      width: 100%;
-      max-width: 300px;
-      margin: 20px 0;
+      width: 150px;
+      margin: 10px 0;
       border: 2px solid #4CAF50;
       border-radius: 5px;
+      text-align: center;
+    }
+
+    .feedback {
+      font-size: 1.5em;
+      min-height: 30px;
     }
 
     .keypad {
@@ -65,8 +78,8 @@
       background-color: #bbb;
     }
 
-    .submit-button, .restart-button {
-      background-color: #4CAF50;
+    .restart-button {
+      background-color: #FF5722;
       color: white;
       font-size: 1.5em;
       padding: 15px 30px;
@@ -74,22 +87,13 @@
       border-radius: 5px;
       cursor: pointer;
       margin-top: 20px;
-    }
-
-    .restart-button {
-      background-color: #FF5722;
+      display: none;
     }
 
     .message {
       font-size: 1.3em;
       margin-top: 20px;
       color: #4CAF50;
-    }
-
-    .feedback {
-      font-size: 1.2em;
-      color: #555;
-      margin-top: 10px;
     }
 
     @media (max-width: 600px) {
@@ -104,8 +108,12 @@
     <h1>Multiplication Speed Game</h1>
     <div class="timer" id="timer">30</div>
     <div class="question" id="question">5 × 3 = ?</div>
-    <input type="number" id="answer" placeholder="Type answer" />
-    
+
+    <div class="answer-box">
+      <input type="number" id="answer" placeholder="Answer" />
+      <div class="feedback" id="feedback"></div>
+    </div>
+
     <div class="keypad" id="keypad">
       <button onclick="appendNumber(1)">1</button>
       <button onclick="appendNumber(2)">2</button>
@@ -121,9 +129,8 @@
       <button onclick="submitAnswer()">⏎</button>
     </div>
 
-    <div class="feedback" id="feedback"></div>
     <div class="message" id="result"></div>
-    <button class="restart-button" id="restartBtn" style="display: none;">Restart</button>
+    <button class="restart-button" id="restartBtn">Restart</button>
   </div>
 
   <script>
@@ -145,23 +152,22 @@
       currentAnswer = num1 * num2;
       questionEl.textContent = `${num1} × ${num2} = ?`;
       answerEl.value = "";
+      feedbackEl.textContent = "";
     }
 
     function submitAnswer() {
       if (isGameOver) return;
 
       const userAnswer = parseInt(answerEl.value);
-      if (isNaN(userAnswer)) return;
-
-      if (userAnswer === currentAnswer) {
-        score++;
-        feedbackEl.textContent = "✅ Correct!";
+      if (!isNaN(userAnswer)) {
+        if (userAnswer === currentAnswer) {
+          score++;
+          feedbackEl.textContent = "✅ Correct!";
+        } else {
+          feedbackEl.textContent = `❌ Wrong! The answer was ${currentAnswer}`;
+        }
         getRandomQuestion();
-      } else {
-        feedbackEl.textContent = "❌ Try again!";
       }
-
-      answerEl.value = "";
     }
 
     function appendNumber(num) {
@@ -181,7 +187,6 @@
 
     function startGame() {
       getRandomQuestion();
-      feedbackEl.textContent = "";
       const interval = setInterval(() => {
         if (timer <= 0) {
           clearInterval(interval);
@@ -211,4 +216,3 @@
   </script>
 </body>
 </html>
-
