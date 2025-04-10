@@ -19,11 +19,6 @@
       padding: 20px;
     }
 
-    h1 {
-      font-size: 2.5em;
-      color: #4CAF50;
-    }
-
     .question {
       font-size: 2em;
       margin: 30px 0;
@@ -107,7 +102,6 @@
     }
 
     @media (max-width: 600px) {
-      h1 { font-size: 2em; }
       .question { font-size: 1.5em; }
       input { font-size: 1.5em; }
     }
@@ -115,7 +109,6 @@
 </head>
 <body>
   <div class="container">
-    <h1>/h1>
     <div class="timer" id="timer">30</div>
     <div class="question" id="question">5 × 3 = ?</div>
 
@@ -149,6 +142,7 @@
     let wrongCount = 0;
     let isGameOver = false;
     let currentAnswer = 0;
+    let inputLocked = false;
 
     const timerEl = document.getElementById("timer");
     const questionEl = document.getElementById("question");
@@ -165,13 +159,15 @@
       answerEl.value = "";
       feedbackEl.textContent = "";
       feedbackEl.className = "feedback";
+      inputLocked = false;
     }
 
     function submitAnswer() {
-      if (isGameOver) return;
-
+      if (isGameOver || inputLocked) return;
       const userAnswer = parseInt(answerEl.value);
       if (!isNaN(userAnswer)) {
+        inputLocked = true;
+
         if (userAnswer === currentAnswer) {
           correctCount++;
           feedbackEl.textContent = "✅ Correct!";
@@ -181,16 +177,23 @@
           feedbackEl.textContent = `❌ Wrong! The correct answer was ${currentAnswer}`;
           feedbackEl.className = "feedback wrong";
         }
-        getRandomQuestion();
+
+        // Wait 1 second before next question
+        setTimeout(() => {
+          if (!isGameOver) {
+            getRandomQuestion();
+          }
+        }, 1000);
       }
     }
 
     function appendNumber(num) {
-      if (isGameOver) return;
+      if (isGameOver || inputLocked) return;
       answerEl.value += num;
     }
 
     function clearAnswer() {
+      if (isGameOver || inputLocked) return;
       answerEl.value = "";
     }
 
@@ -208,6 +211,7 @@
         if (timer <= 0) {
           clearInterval(interval);
           isGameOver = true;
+          inputLocked = true;
           resultEl.textContent = `⏰ Time's up!\n✅ Correct: ${correctCount}\n❌ Wrong: ${wrongCount}\n⭐ Total Score: ${correctCount}`;
           restartBtn.style.display = "inline-block";
         } else {
@@ -222,6 +226,7 @@
       correctCount = 0;
       wrongCount = 0;
       isGameOver = false;
+      inputLocked = false;
       resultEl.textContent = "";
       feedbackEl.textContent = "";
       feedbackEl.className = "feedback";
@@ -235,4 +240,3 @@
   </script>
 </body>
 </html>
-
