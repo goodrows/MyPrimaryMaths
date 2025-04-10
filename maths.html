@@ -86,6 +86,12 @@
       color: #4CAF50;
     }
 
+    .feedback {
+      font-size: 1.2em;
+      color: #555;
+      margin-top: 10px;
+    }
+
     @media (max-width: 600px) {
       h1 { font-size: 2em; }
       .question { font-size: 1.5em; }
@@ -101,7 +107,6 @@
     <input type="number" id="answer" placeholder="Type answer" />
     
     <div class="keypad" id="keypad">
-      <!-- Keypad buttons -->
       <button onclick="appendNumber(1)">1</button>
       <button onclick="appendNumber(2)">2</button>
       <button onclick="appendNumber(3)">3</button>
@@ -116,6 +121,7 @@
       <button onclick="submitAnswer()">⏎</button>
     </div>
 
+    <div class="feedback" id="feedback"></div>
     <div class="message" id="result"></div>
     <button class="restart-button" id="restartBtn" style="display: none;">Restart</button>
   </div>
@@ -131,23 +137,31 @@
     const answerEl = document.getElementById("answer");
     const resultEl = document.getElementById("result");
     const restartBtn = document.getElementById("restartBtn");
+    const feedbackEl = document.getElementById("feedback");
 
     function getRandomQuestion() {
       const num1 = Math.floor(Math.random() * 10) + 1;
       const num2 = Math.floor(Math.random() * 10) + 1;
       currentAnswer = num1 * num2;
       questionEl.textContent = `${num1} × ${num2} = ?`;
+      answerEl.value = "";
     }
 
     function submitAnswer() {
       if (isGameOver) return;
 
       const userAnswer = parseInt(answerEl.value);
-      if (!isNaN(userAnswer) && userAnswer === currentAnswer) {
+      if (isNaN(userAnswer)) return;
+
+      if (userAnswer === currentAnswer) {
         score++;
+        feedbackEl.textContent = "✅ Correct!";
+        getRandomQuestion();
+      } else {
+        feedbackEl.textContent = "❌ Try again!";
       }
+
       answerEl.value = "";
-      getRandomQuestion();
     }
 
     function appendNumber(num) {
@@ -167,6 +181,7 @@
 
     function startGame() {
       getRandomQuestion();
+      feedbackEl.textContent = "";
       const interval = setInterval(() => {
         if (timer <= 0) {
           clearInterval(interval);
@@ -185,6 +200,7 @@
       score = 0;
       isGameOver = false;
       resultEl.textContent = "";
+      feedbackEl.textContent = "";
       answerEl.value = "";
       restartBtn.style.display = "none";
       timerEl.textContent = timer;
@@ -195,3 +211,4 @@
   </script>
 </body>
 </html>
+
